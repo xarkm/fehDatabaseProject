@@ -1,0 +1,89 @@
+Alphonse: Prince of Askr,Red,Sword,Infantry,43,35,25,32,22,Heroes
+Alphonse: Spring Prince,Green,Axe,Cavalry,41,35,33,30,18,Heroes
+Alphonse: Askran Duo,Blue,Tome,Infantry,41,38,17,35,30,Heroes
+Alphonse: Uplifting Love,Green,Tome,Armour,43,38,25,37,31,Heroes
+Sharena: Princess of Askr,Blue,Lance,Infantry,43,32,32,29,22,Heroes
+Sharena: Spring Princess,Green,Tome,Infantry,37,32,36,16,30,Heroes
+Anna: Commander,Green,Axe,Infantry,41,29,38,22,28,Heroes
+Anna: Wealth-wisher,Red,Bow,Infantry,40,34,40,16,37,Heroes
+Gustav: Majestic Love,Green,Axe,Armour,49,41,18,46,31,Heroes
+Henriette: Overflowing Love,Red,Tome,Armour,42,40,18,35,40,Heroes
+Bruno: Masked Hare,Colourless,Staff,Cavalry,41,30,24,35,14,Heroes
+Veronica: Brave Princess,Colourless,Staff,Cavalry,36,32,36,21,19,Heroes
+Veronica: Spring Princess,Green,Tome,Flying,38,35,36,16,25,Heroes
+Veronica: Harmonic Pirates,Green,Axe,Cavalry,38,39,19,36,29,Heroes
+Veronica: Bestowed Love,Blue,Tome,Cavalry,40,36,38,21,22,Heroes
+Fjorm: Princess of Ice,Blue,Lance,Infantry,39,30,31,30,34,Heroes
+Fjorm: New Traditions,Green,Bow,Flying,39,35,35,20,21,Heroes
+Fjorm: Bride of Rime,Colourless,Staff,Flying,42,34,34,17,23,Heroes
+Gunnthra: Voice of Dreams,Green,Tome,Cavalry,37,31,33,19,25,Heroes
+Gunnthra: Year's First Dream,Red,Sword,Flying,38,34,37,27,26,Heroes
+Gunnthra: Beaming Smile,Colourless,Dagger,Cavalry,39,33,37,17,24,Heroes
+Hrid: Icy Blade,Red,Sword,Cavalry,41,37,17,36,26,Heroes
+Hrid: Resolute Prince,Red,Sword,Flying,42,38,19,36,27,Heroes
+Ylgr: Fresh Snowfall,Blue,Dagger,Infantry,38,33,38,22,20,Heroes
+Ylgr: Breaking the Ice,Green,Axe,Infantry,42,35,35,30,25,Heroes
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
+z,z,z,z,1,1,1,1,1,z
