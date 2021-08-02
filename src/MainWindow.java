@@ -1,46 +1,124 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class MainWindow {
 
-    HeroWindow heroTab;
+    TableWindow tableWindow;
+    private String heroViewLabel = "List of Heroes";
+    private String heroFileName = "src/feh-heroes.txt";
+    private String[] heroStatList = {"Name", "Colour", "Weapon", "Movement", "HP", "Atk", "Spd", "Def", "Res", "Game"};
+
+    private String weaponViewLabel = "List of Weapons";
+    private String weaponFileName = "src/feh-weapons.txt";
+    private String[] weaponStatList = {"Name", "Colour", "Type", "Might", "PRF", "Refinable", "Cost"};
+
+    private String[] arrayOfLabels = {heroViewLabel, weaponViewLabel};
+    private String[] arrayOfFileNames = {heroFileName, weaponFileName};
+    private String[][] arrayOfStatLists = {heroStatList, weaponStatList};
+
+    //private JFrame mainFrame;
+    private JLabel tableNameLabel;
+    private JScrollPane tableViewPanel;
+    private JPanel tableSortingPanel;
+    private int currentTableNumber;
+    private JLabel tableNumberLabel;
+
     public static void main(String[] args) throws Exception {
         MainWindow main = new MainWindow();
         main.createMainWindow();
     }
 
     public void createMainWindow() throws Exception {
-        heroTab = new HeroWindow();
+        tableWindow = new TableWindow();
 
-        // Creating base components of frame
+        // Initialising frame
         JFrame mainFrame = new JFrame();
+        // Initialising base window header
         JPanel tableNamePanel = new JPanel();
         tableNamePanel.setPreferredSize(new Dimension(1500, 25));
-        JScrollPane tableViewPanel = heroTab.createPanelForTable();
-        tableViewPanel.setBackground(Color.BLUE);
-        JPanel tableSortingPanel = heroTab.createPanelForSorting();
+        // Initialising main part of window, the table panel
+        tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[0], arrayOfStatLists[0]);
+        // Initialising sorting panel for the table
+        tableSortingPanel = tableWindow.createPanelForSorting(arrayOfStatLists[0]);
+        // Creating bottom part of window, to switch between table and sorting methods
         GridBagLayout tableSelectionPanelLayout = new GridBagLayout();
         JPanel tableSelectionPanel = new JPanel(tableSelectionPanelLayout);
         tableSelectionPanel.setPreferredSize(new Dimension(1500, 40));
-        tableSelectionPanel.setBackground(Color.GREEN);
+        // Adding the above aspects to their respective areas
         mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
         mainFrame.getContentPane().add(BorderLayout.SOUTH, tableSelectionPanel);
         mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);
         mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);
 
         // Components for tableNamePanel
-        JLabel tableNameLabel = new JLabel("List of Heroes");
+        tableNameLabel = new JLabel(arrayOfLabels[0]);
         tableNameLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
         tableNamePanel.add(tableNameLabel);
 
         // Components for tableSelectionPanel
         JButton previousTableButton = new JButton("<");
         previousTableButton.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
+        previousTableButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.getContentPane().remove(tableNamePanel);
+                mainFrame.getContentPane().remove(tableSortingPanel);
+                mainFrame.getContentPane().remove(tableViewPanel);
+                int newTableNumber = currentTableNumber;
+                if (newTableNumber == 0) {
+                    // Set newTableNumber to index of last element
+                    newTableNumber = arrayOfStatLists.length - 1;
+                }
+                else {
+                    newTableNumber -= 1;
+                }
+                currentTableNumber = newTableNumber;
+                tableNumberLabel.setText(newTableNumber + 1 + "");
+                tableNameLabel.setText(arrayOfLabels[newTableNumber]);
+                try {
+                    tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
+                    tableSortingPanel = tableWindow.createPanelForSorting(arrayOfStatLists[newTableNumber]);
+                    mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
+                    mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);
+                    mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
         JButton nextTableButton = new JButton(">");
         nextTableButton.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
-        JLabel tableNumber = new JLabel("1");
-        tableNumber.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
-        tableNumber.setHorizontalAlignment(SwingConstants.CENTER);
+        nextTableButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.getContentPane().remove(tableNamePanel);
+                mainFrame.getContentPane().remove(tableSortingPanel);
+                mainFrame.getContentPane().remove(tableViewPanel);
+                int newTableNumber = currentTableNumber;
+                if (newTableNumber == arrayOfStatLists.length - 1) {
+                    // Set newTableNumber to index of last element
+                    newTableNumber = 0;
+                }
+                else {
+                    newTableNumber += 1;
+                }
+                currentTableNumber = newTableNumber;
+                tableNumberLabel.setText(newTableNumber + 1 + "");
+                tableNameLabel.setText(arrayOfLabels[newTableNumber]);
+                try {
+                    tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
+                    tableSortingPanel = tableWindow.createPanelForSorting(arrayOfStatLists[newTableNumber]);
+                    mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
+                    mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);
+                    mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
+        tableNumberLabel = new JLabel("1");
+        tableNumberLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
+        tableNumberLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        currentTableNumber = 0;
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 1;
@@ -56,8 +134,8 @@ public class MainWindow {
 
         gbc.gridx = 1;
         gbc.gridwidth = 14;
-        tableSelectionPanelLayout.setConstraints(tableNumber, gbc);
-        tableSelectionPanel.add(tableNumber);
+        tableSelectionPanelLayout.setConstraints(tableNumberLabel, gbc);
+        tableSelectionPanel.add(tableNumberLabel);
 
         gbc.gridx = 15;
         gbc.gridwidth = 1;
