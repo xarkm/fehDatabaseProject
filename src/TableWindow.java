@@ -2,104 +2,71 @@ package src;
 
 import javax.swing.*;
 import javax.swing.table.*;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 public class TableWindow {
 
     private Parser parser;
-    private JTable heroStatTable;
+    private JTable statTable;
+    private HashMap<String, String> descriptionMap;
+    private JTextArea rowDescriptionLabel;
 
     public TableWindow() {
         parser = new Parser();
     }
 
-    public JScrollPane createPanelForTable(String heroFileName, String[] statNameList) throws Exception {
-        heroStatTable = new JTable(getFileContentsAsNestedArray(heroFileName, statNameList), statNameList);
-        heroStatTable.setRowHeight(20);
-        heroStatTable.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
-        resizeColumnWidth(heroStatTable);
-        JScrollPane scrollPane = new JScrollPane(heroStatTable);
+    public JScrollPane createPanelForTable(String statFileName, String descriptionFileName, String[] statNameList) throws Exception {
+        convertDescriptionFileToMap(descriptionFileName);
+        statTable = new JTable(getFileContentsAsNestedArray(statFileName, statNameList), statNameList) {
+            // Disable editing of the table
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+                Color color1 = new Color(230,230,230);
+                Color color2 = Color.WHITE;
+                if(!c.getBackground().equals(getSelectionBackground())) {
+                    Color coleur = (row % 2 == 0 ? color1 : color2);
+                    c.setBackground(coleur);
+                    coleur = null;
+                }
+                return c;
+            }
+        };
+        statTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            // Add event listener to display the description for the selected row in the small info window
+            public void valueChanged(ListSelectionEvent event) {
+                if (!statTable.getSelectionModel().isSelectionEmpty()) {
+                    String name = (String) statTable.getValueAt(statTable.getSelectedRow(), 0);
+                    // Get the value (description) of the selected key (name value of selected row)
+                    rowDescriptionLabel.setText(name + "\n\n" + descriptionMap.get(name));
+                    // Sets scroll pane to the top of the text
+                    rowDescriptionLabel.setCaretPosition(0);
+                }
+            }
+        });
+        statTable.setRowHeight(32);
+        statTable.getColumnModel().setColumnMargin(0);
+        statTable.getTableHeader().setOpaque(false);
+        statTable.getTableHeader().setEnabled(false);
+        statTable.getTableHeader().setBackground(new Color(180,180,180));
+        statTable.getTableHeader().setFont(new Font("Lucida Grande", Font.PLAIN, 16));
+        statTable.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
+        resizeColumnWidth(statTable);
+        JScrollPane scrollPane = new JScrollPane(statTable);
         return scrollPane;
     }
-
-    // public JPanel createPanelForSorting(String[] statNameList) {
-    //     // Create the housing panel
-    //     JPanel tableSortingPanel = new JPanel(new GridLayout(11, 1));
-    //     tableSortingPanel.setPreferredSize(new Dimension(300, 800));
-    //     // Create the descriptive label (that the panel is for sorting)
-    //     JLabel tableSortingLabel = new JLabel("Sort by:");
-    //     tableSortingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    //     tableSortingLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
-    //     // Create the buttons for sorting and group them up in an array
-    //     ArrayList<JButton> sortingButtons = new ArrayList<>();
-    //     for (int i = 0; i < statNameList.length; i++) {
-    //         JButton btn = new JButton(statNameList[i]);
-    //         btn.setName(statNameList[i]);
-    //         sortingButtons.add(btn);
-    //     }
-    //     // Add the label and buttons to the panel
-    //     tableSortingPanel.add(tableSortingLabel);
-    //     for (JButton btn : sortingButtons) {
-    //         btn.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
-    //         tableSortingPanel.add(btn);
-    //     }
-    //     // Create the sorting element that will reorder the rows of the table
-    //     TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(heroStatTable.getModel());
-    //     heroStatTable.setRowSorter(sorter);
-
-    //     // Add an action listener to each button
-    //     for (JButton btn : sortingButtons) {
-    //         btn.addActionListener(new ActionListener() {
-    //             public void actionPerformed(ActionEvent e) {
-    //                 List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-    //                 int i = 0;
-    //                 boolean foundMatchingColumn = false;
-    //                 // Check for the column that matches each button's name so each button sorts a different column
-    //                 while (!foundMatchingColumn && i < statNameList.length) {
-    //                     if (statNameList[i].equals(btn.getName())) {
-    //                         foundMatchingColumn = true;
-    //                         // If same button was the previous one clicked, then switch between ascending and descending sorting
-    //                         if (btn.getText().equals(btn.getName() + " (Asc)")) {
-    //                             sortKeys.add(new RowSorter.SortKey(i, SortOrder.DESCENDING));
-    //                             btn.setText(btn.getName() + " (Des)");
-    //                         }
-    //                         else if (btn.getText().equals(btn.getName() + " (Des)")) {
-    //                             sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
-    //                             btn.setText(btn.getName() + " (Asc)");
-    //                         }
-    //                         // If new button is clicked, reset the names of all the other buttons and update the name of the clicked button
-    //                         else {
-    //                             btn.setText(btn.getName() + " (Asc)");
-    //                             sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
-    //                         }
-    //                         for (JButton otherBtn : sortingButtons) {
-    //                             if (otherBtn != btn) {
-    //                                 otherBtn.setText(otherBtn.getName());
-    //                             }
-    //                         }
-    //                         // By default, sort by first column (Name) as that is always unique
-    //                         sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-    //                         sorter.setSortKeys(sortKeys);
-    //                     }
-    //                     else {
-    //                         i++;
-    //                     }
-    //                 }
-    //             }
-    //         });
-    //     }
-
-    //     return tableSortingPanel;
-    // }
 
     public JPanel createPanelForSorting(String[] statNameList) {
         GridBagLayout sortingGrid = new GridBagLayout();
         JPanel tableSortingPanel = new JPanel(sortingGrid);
-        // tableSortingPanel.setPreferredSize(new Dimension(300, 1000));
-        // tableSortingPanel.setMaximumSize(new Dimension(300, 1000));
 
         GridBagConstraints gbc = new GridBagConstraints();
         // Creating dummy panels so that the GridBagLayout actually spaces the cells correctly
@@ -109,14 +76,13 @@ public class TableWindow {
         gbc.gridheight = 1;
         gbc.gridx = 0;
         gbc.fill = GridBagConstraints.VERTICAL;
-        for (int j = 0; j < 10; j++) {
+        for (int j = 0; j < 15; j++) {
             gbc.gridy = j;
             JLabel btn = new JLabel("");
             btn.setBackground(Color.GREEN);
-            btn.setPreferredSize(new Dimension(150, 75));
+            btn.setPreferredSize(new Dimension(150, 50));
             sortingGrid.setConstraints(btn, gbc);
             tableSortingPanel.add(btn, gbc);
-            //btn.setVisible(false);
         }
         gbc.fill = GridBagConstraints.NONE;
 
@@ -126,21 +92,21 @@ public class TableWindow {
         tableSortingLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
 
         // Create empty JTextArea that will display info on currently clicked row (if any)
-        JTextArea rowDescriptionLabel = new JTextArea();
-        rowDescriptionLabel.setPreferredSize(new Dimension(290, 290));
-        rowDescriptionLabel.setText("aaaaaaasqqaa aau ghc uh vi ya sdgayg hbjh awjhbqcw qvjhbjhqwbcwhq");
+        rowDescriptionLabel = new JTextArea("Select a row to view its description");
+        rowDescriptionLabel.setMargin( new Insets(10,10,10,10) );
         rowDescriptionLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
         rowDescriptionLabel.setWrapStyleWord(true);
         rowDescriptionLabel.setLineWrap(true);
-        rowDescriptionLabel.setOpaque(false);
         rowDescriptionLabel.setEditable(false);
         rowDescriptionLabel.setFocusable(false);
+        JScrollPane descriptionBox = new JScrollPane(rowDescriptionLabel);
+        descriptionBox.setPreferredSize(new Dimension(290, 440));
         
         // Create the buttons for sorting and group them up in an array
         ArrayList<JButton> sortingButtons = new ArrayList<>();
         for (int i = 0; i < statNameList.length; i++) {
             JButton btn = new JButton(statNameList[i]);
-            btn.setPreferredSize(new Dimension(150, 75));
+            btn.setPreferredSize(new Dimension(150, 50));
             btn.setName(statNameList[i]);
             sortingButtons.add(btn);
         }
@@ -176,12 +142,12 @@ public class TableWindow {
         gbc.gridy = 6;
         gbc.gridwidth = 2;
         gbc.gridheight = GridBagConstraints.REMAINDER;
-        sortingGrid.setConstraints(rowDescriptionLabel, gbc);
-        tableSortingPanel.add(rowDescriptionLabel);
+        sortingGrid.setConstraints(descriptionBox, gbc);
+        tableSortingPanel.add(descriptionBox);
 
         // Create the sorting element that will reorder the rows of the table
-        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(heroStatTable.getModel());
-        heroStatTable.setRowSorter(sorter);
+        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(statTable.getModel());
+        statTable.setRowSorter(sorter);
 
         // Add an action listener to each button
         for (JButton btn : sortingButtons) {
@@ -229,8 +195,12 @@ public class TableWindow {
     }
 
     private String[][] getFileContentsAsNestedArray(String fileName, String[] statNameList) throws Exception {
-        return parser.parseTextIntoArray(fileName, statNameList);
+        return parser.parseStatFileIntoArray(fileName, statNameList);
     }
+
+    private void convertDescriptionFileToMap(String fileName) {
+        descriptionMap = parser.parseDescriptionFileIntoMap(fileName);
+    } 
 
     private void resizeColumnWidth(JTable table) {
         final TableColumnModel columnModel = table.getColumnModel();

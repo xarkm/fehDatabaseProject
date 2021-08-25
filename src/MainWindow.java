@@ -1,6 +1,7 @@
 package src;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -9,14 +10,17 @@ public class MainWindow {
     TableWindow tableWindow;
     private String heroViewLabel = "List of Heroes";
     private String heroFileName = "files/feh-heroes.txt";
+    private String heroDescriptionFileName = "files/feh-herodescriptions.txt";
     private String[] heroStatList = {"Name", "Colour", "Weapon", "Movement", "HP", "Atk", "Spd", "Def", "Res", "Game"};
 
     private String weaponViewLabel = "List of Weapons";
     private String weaponFileName = "files/feh-weapons.txt";
+    private String weaponDescriptionFileName = "files/feh-weapondescriptions.txt";
     private String[] weaponStatList = {"Name", "Colour", "Type", "Might", "PRF", "Refinable", "Cost"};
 
     private String[] arrayOfLabels = {heroViewLabel, weaponViewLabel};
     private String[] arrayOfFileNames = {heroFileName, weaponFileName};
+    private String[] arrayOfDescriptionFileNames = {heroDescriptionFileName, weaponDescriptionFileName};
     private String[][] arrayOfStatLists = {heroStatList, weaponStatList};
 
     //private JFrame mainFrame;
@@ -38,9 +42,9 @@ public class MainWindow {
         JFrame mainFrame = new JFrame();
         // Initialising base window header
         JPanel tableNamePanel = new JPanel();
-        tableNamePanel.setPreferredSize(new Dimension(1500, 25));
+        tableNamePanel.setPreferredSize(new Dimension(1500, 40));
         // Initialising main part of window, the table panel
-        tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[0], arrayOfStatLists[0]);
+        tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[0], arrayOfDescriptionFileNames[0], arrayOfStatLists[0]);
         // Initialising sorting panel for the table
         tableSortingPanel = tableWindow.createPanelForSorting(arrayOfStatLists[0]);
         // Creating bottom part of window, to switch between table and sorting methods
@@ -56,6 +60,7 @@ public class MainWindow {
         // Components for tableNamePanel
         tableNameLabel = new JLabel(arrayOfLabels[0]);
         tableNameLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
+        tableNameLabel.setVerticalAlignment(SwingConstants.CENTER);
         tableNamePanel.add(tableNameLabel);
 
         // Components for tableSelectionPanel
@@ -78,7 +83,7 @@ public class MainWindow {
                 tableNumberLabel.setText(newTableNumber + 1 + "");
                 tableNameLabel.setText(arrayOfLabels[newTableNumber]);
                 try {
-                    tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
+                    tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
                     tableSortingPanel = tableWindow.createPanelForSorting(arrayOfStatLists[newTableNumber]);
                     mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
                     mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);
@@ -107,7 +112,7 @@ public class MainWindow {
                 tableNumberLabel.setText(newTableNumber + 1 + "");
                 tableNameLabel.setText(arrayOfLabels[newTableNumber]);
                 try {
-                    tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
+                    tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
                     tableSortingPanel = tableWindow.createPanelForSorting(arrayOfStatLists[newTableNumber]);
                     mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
                     mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);

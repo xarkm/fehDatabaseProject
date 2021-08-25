@@ -5,6 +5,7 @@ import java.util.Scanner;
 import java.lang.NullPointerException;
 import java.lang.IllegalStateException;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 
 public class Parser {
 
@@ -17,21 +18,21 @@ public class Parser {
      * @throws FileNotFoundException Thrown when the file name given to the scanner is not found
      * @throws IllegalStateException Thrown if scanner is closed
      */
-    public String[][] parseTextIntoArray(String fileName, String[] statNames) throws NullPointerException, FileNotFoundException, IllegalStateException {
-        File heroFile = null;
-        // Try to update heroFile with the file to be parsed
+    public String[][] parseStatFileIntoArray(String fileName, String[] statNames) throws NullPointerException, FileNotFoundException, IllegalStateException {
+        File file = null;
+        // Try to update file with the file to be parsed
         try {
-            heroFile = new File(fileName);
+            file = new File(fileName);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
         Scanner scannerCounter = null;
         Scanner scanner = null;
         int numberOfLines = 0;
-        // Try to scan the heroFile with the scanner
+        // Try to scan the file with the scanner
         try {
-            scannerCounter = new Scanner(heroFile);
-            scanner = new Scanner(heroFile);
+            scannerCounter = new Scanner(file);
+            scanner = new Scanner(file);
             numberOfLines = getNumberOfLines(scannerCounter);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -68,4 +69,32 @@ public class Parser {
         return count;
     }
 
+    public HashMap<String, String> parseDescriptionFileIntoMap(String fileName) {
+        File file = null;
+        // Try to update file with the file to be parsed
+        try {
+            file = new File(fileName);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        Scanner scanner = null;
+        // Try to scan the file with the scanner
+        try {
+            scanner = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        HashMap<String, String> entryToDescription = new HashMap<>();
+        try {
+            while (scanner.hasNextLine()) {
+                String[] individualHeroStats = scanner.nextLine().split(",", 2);
+                entryToDescription.put(individualHeroStats[0], individualHeroStats[1]);
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } finally {
+            scanner.close();
+        }
+        return entryToDescription;
+    }
 }
