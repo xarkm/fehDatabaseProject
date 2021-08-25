@@ -1,3 +1,5 @@
+package src;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -6,11 +8,11 @@ public class MainWindow {
 
     TableWindow tableWindow;
     private String heroViewLabel = "List of Heroes";
-    private String heroFileName = "src/feh-heroes.txt";
+    private String heroFileName = "files/feh-heroes.txt";
     private String[] heroStatList = {"Name", "Colour", "Weapon", "Movement", "HP", "Atk", "Spd", "Def", "Res", "Game"};
 
     private String weaponViewLabel = "List of Weapons";
-    private String weaponFileName = "src/feh-weapons.txt";
+    private String weaponFileName = "files/feh-weapons.txt";
     private String[] weaponStatList = {"Name", "Colour", "Type", "Might", "PRF", "Refinable", "Cost"};
 
     private String[] arrayOfLabels = {heroViewLabel, weaponViewLabel};
@@ -157,6 +159,7 @@ public class MainWindow {
         // Finally setup for the main frame
         mainFrame.pack();
         mainFrame.setVisible(true);
+        mainFrame.setResizable(false);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
     }
 
