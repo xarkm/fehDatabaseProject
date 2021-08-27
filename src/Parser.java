@@ -14,9 +14,6 @@ public class Parser {
      * @param fileName Name of the file to be parsed
      * @param statNames ArrayList of all stat names
      * @return String[][], with each entry corresponding to one line in the file
-     * @throws NullPointerException Thrown when the file name parameter cannot be found
-     * @throws FileNotFoundException Thrown when the file name given to the scanner is not found
-     * @throws IllegalStateException Thrown if scanner is closed
      */
     public String[][] parseStatFileIntoArray(String fileName, String[] statNames) {
         File file = null;
@@ -25,6 +22,7 @@ public class Parser {
             file = new File(fileName);
         } catch (NullPointerException e) {
             e.printStackTrace();
+            System.err.println("File was not successfully created");
         }
         Scanner scannerCounter = null;
         Scanner scanner = null;
@@ -36,37 +34,25 @@ public class Parser {
             numberOfLines = getNumberOfLines(scannerCounter);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            System.err.println("No usable file was found for scanning");
         }
-        String[][] heroStatsArray = new String[numberOfLines][statNames.length];
+        String[][] statsArray = new String[numberOfLines][statNames.length];
         try {
             int lineNumber = 0;
             while (scanner.hasNextLine()) {
                 String[] individualHeroStats = scanner.nextLine().split(",");
                 for (int i = 0; i < statNames.length; i++) {
-                    heroStatsArray[lineNumber][i] = individualHeroStats[i];
+                    statsArray[lineNumber][i] = individualHeroStats[i];
                 }
                 lineNumber++;
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();
+            System.err.println("File scanner has entered illegal state");
         } finally {
             scanner.close();
         }
-        return heroStatsArray;
-    }
-
-    /**
-     * Count number of lines in the file.
-     * @param scanner The scanner with the file whose lines will be checked
-     * @return Number of lines in the file
-     */
-    public int getNumberOfLines(Scanner scanner) {
-        int count = 0;
-        while (scanner.hasNextLine()) {
-            count++;
-            scanner.nextLine();
-        }
-        return count;
+        return statsArray;
     }
 
     /**
@@ -82,6 +68,7 @@ public class Parser {
             file = new File(fileName);
         } catch (NullPointerException e) {
             e.printStackTrace();
+            System.err.println("File was not successfully created");
         }
         Scanner scanner = null;
         // Try to scan the file with the scanner
@@ -89,6 +76,7 @@ public class Parser {
             scanner = new Scanner(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            System.err.println("No usable file was found for scanning");
         }
         HashMap<String, String> entryToDescription = new HashMap<>();
         try {
@@ -98,9 +86,25 @@ public class Parser {
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();
+            System.err.println("File scanner has entered illegal state");
         } finally {
             scanner.close();
         }
         return entryToDescription;
     }
+    
+    /**
+     * Count number of lines in the file.
+     * @param scanner The scanner with the file whose lines will be checked
+     * @return Number of lines in the file
+     */
+    public int getNumberOfLines(Scanner scanner) {
+        int count = 0;
+        while (scanner.hasNextLine()) {
+            count++;
+            scanner.nextLine();
+        }
+        return count;
+    }
+
 }

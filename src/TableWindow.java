@@ -14,27 +14,51 @@ import java.io.FileNotFoundException;
 
 public class TableWindow {
 
-    private Parser parser;
-    private JTable statTable;
-    private HashMap<String, String> descriptionMap;
-    private JTextArea rowDescriptionLabel;
-    private JPanel tableSortingPanel;
-    private GridBagLayout sortingGrid;
+    private Parser parser;                          // Parser to take in file and convert it to a different form
+    private JTable statTable;                       // Used to contain population of data 
+    private HashMap<String, String> descriptionMap; // Holds HashMap associating unique names to descriptions
+    private JTextArea rowDescriptionBox;            // Text area to display description of selected row
+    private JPanel tableSortingPanel;               // Will contain both sorting and description box elements
+    private GridBagLayout sortingGrid;              // Grid that will contain sorting and description box elements
 
+    /**
+     * Constructor that simply creates a parser for the files that will be used to create the table
+     */
     public TableWindow() {
         parser = new Parser();
     }
 
     /**
-     * 
-     * @param statFileName
-     * @param descriptionFileName
-     * @param statNameList
-     * @throws NullPointerException
-     * @throws FileNotFoundException
-     * @throws IllegalStateException
+     * Creates the populated table based on the stats and description file names and then returns it inside a JScrollPane
+     * @param statFileName File name of the stats file
+     * @param descriptionFileName File name of the description file
+     * @param statNameList List of stat names that correspond 1:1 (in order) with the stat file
+     * @return JScrollPane that contains the populated table
+     * @throws NullPointerException Thrown when the file name parameter cannot be found
+     * @throws FileNotFoundException Thrown when the file name given to the scanner is not found
+     * @throws IllegalStateException Thrown if scanner is closed or tries reading a nonexistent line
+     */
+    public JScrollPane getPopulatedTablePanel(String statFileName, String descriptionFileName, String[] statNameList) throws NullPointerException, FileNotFoundException, IllegalStateException {
+        initialiseTable(statFileName, descriptionFileName, statNameList);
+        convertDescriptionFileToMap(descriptionFileName);
+        updateTableVisuals();
+        JScrollPane scrollPane = new JScrollPane(statTable);
+        return scrollPane;
+    }
+
+    /**
+     * Initialises the table with the converted file data (into an array); changes visual format of the 
+     * table; add/disables some functionalities of the table
+     * @param statFileName File name of the stats file
+     * @param descriptionFileName File name of the description file
+     * @param statNameList List of stat names that correspond 1:1 (in order) with the stat file
+     * @throws NullPointerException Thrown when the file name parameter cannot be found
+     * @throws FileNotFoundException Thrown when the file name given to the scanner is not found
+     * @throws IllegalStateException Thrown if scanner is closed or tries reading a nonexistent line
      */
     private void initialiseTable(String statFileName, String descriptionFileName, String[] statNameList) throws NullPointerException, FileNotFoundException, IllegalStateException {
+        // Creates a stat table, populated with an array created from the converted data of the stat file.
+        // Also changes visuals of the table and disables editing
         statTable = new JTable(getFileContentsAsNestedArray(statFileName, statNameList), statNameList) {
             // Disable editing of the table
             public boolean isCellEditable(int row, int column) {
@@ -56,19 +80,20 @@ public class TableWindow {
         statTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             // Add event listener to display the description for the selected row in the small info window
             public void valueChanged(ListSelectionEvent event) {
+                // If there is a row in the table selected
                 if (!statTable.getSelectionModel().isSelectionEmpty()) {
                     String name = (String) statTable.getValueAt(statTable.getSelectedRow(), 0);
                     // Get the value (description) of the selected key (name value of selected row)
-                    rowDescriptionLabel.setText(name + "\n\n" + descriptionMap.get(name));
+                    rowDescriptionBox.setText(name + "\n\n" + descriptionMap.get(name));
                     // Sets scroll pane to the top of the text
-                    rowDescriptionLabel.setCaretPosition(0);
+                    rowDescriptionBox.setCaretPosition(0);
                 }
             }
         });
     }
 
     /**
-     * 
+     * Updates the formatting of the table
      */
     private void updateTableVisuals() {
         statTable.setRowHeight(32);
@@ -82,35 +107,29 @@ public class TableWindow {
     }
 
     /**
-     * 
-     * @return
+     * Creates the sorting and description panel and returning it 
+     * @param statNameList List of stat names that correspond 1:1 (in order) with the stat file
+     * @return JPanel that contains sorting buttons and text area to display descriptions
      */
-    public JScrollPane getPopulatedTablePanel(String statFileName, String descriptionFileName, String[] statNameList) throws NullPointerException, FileNotFoundException, IllegalStateException {
-        initialiseTable(statFileName, descriptionFileName, statNameList);
-        convertDescriptionFileToMap(descriptionFileName);
-        updateTableVisuals();
-        JScrollPane scrollPane = new JScrollPane(statTable);
-        return scrollPane;
-    }
-
-    
-    /**
-     * 
-     * @param statNameList
-     * @return
-     */
-    public JPanel getSorterAndDescriptionPanel(String[] statNameList) {
+    public JPanel getSortingAndDescriptionPanel(String[] statNameList) {
         initialiseSortingAndDescriptionPanel();
         createTableSorter(statNameList);
         createDescriptionBox();
         return tableSortingPanel;
     }
 
+    /**
+     * Initialises the grid and panel, adding the grid to the panel
+     */
     private void initialiseSortingAndDescriptionPanel() {
         sortingGrid = new GridBagLayout();
         tableSortingPanel = new JPanel(sortingGrid);
     }
 
+    /**
+     * Create and add the sorting portion of the sorting/description panel
+     * @param statNameList List of stat names that correspond 1:1 (in order) with the stat file
+     */
     private void createTableSorter(String[] statNameList) {
         // Create base GridBagConstraints object that will be modified as needed for each aspect of the grid
         GridBagConstraints gbc = new GridBagConstraints();
@@ -119,49 +138,58 @@ public class TableWindow {
         // Create dummy cells so there is correct sizing for each aspect of the grid
         createDummyCells(gbc);
         // Create the panel's label/header
-        JLabel tableSortingLabel = createSortingPanelLabel();
+        JLabel tableSortingLabel = createSortingAndDescriptionPanelLabel();
         // Create the buttons for sorting and group them up in an array
         ArrayList<JButton> sortingButtons = createSortingPanelButtons(statNameList);;
         gbc.fill = GridBagConstraints.NONE;
         // Add label to grid
-        addLabelToSortingPanel(gbc, tableSortingLabel);
+        addLabelToSortingAndDescriptionPanel(gbc, tableSortingLabel);
         // Add buttons to grid
-        addButtonsToSortingPanel(gbc, sortingButtons);
+        addButtonsToSortingAndDescriptionPanel(gbc, sortingButtons);
     }
 
+    /**
+     * Create and add text area for sorting/description panel
+     */
     private void createDescriptionBox() {
+        // Create GridBagConstraints to correctly place the text area in the grid
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 1;
         gbc.weighty = 1;
         // Create the panel's text area where descriptions will be displayed when the relevant row is clicked
-        createSortingPanelTextArea();
+        createSortingAndDescriptionPanelTextArea();
         // Add the text box to a scroll pane for longer descriptions
-        JScrollPane descriptionBox = new JScrollPane(rowDescriptionLabel);
+        JScrollPane descriptionBox = new JScrollPane(rowDescriptionBox);
         descriptionBox.setPreferredSize(new Dimension(290, 440));
         // Add text area to grid
-        addTextAreaToSortingPanel(gbc, descriptionBox);
+        addTextAreaToSortingAndDescriptionPanel(gbc, descriptionBox);
     }
 
+    /**
+     * Create empty dummy cells (JLabels) so that spacing of the sorting/description panel elements
+     * is correct
+     * @param gbc Constraints that will decide the location and size of the element within the grid
+     */
     private void createDummyCells(GridBagConstraints gbc) {
-        gbc = new GridBagConstraints();
-        // Creating dummy panels so that the GridBagLayout actually spaces the cells correctly
-        gbc.weightx = 1;
-        gbc.weighty = 1;
         gbc.gridwidth = 2;
         gbc.gridheight = 1;
         gbc.gridx = 0;
         gbc.fill = GridBagConstraints.VERTICAL;
+        // Create 15 dummy cells vertically (the horizontal will be covered by the buttons)
         for (int j = 0; j < 15; j++) {
             gbc.gridy = j;
-            JLabel btn = new JLabel("");
-            btn.setBackground(Color.GREEN);
-            btn.setPreferredSize(new Dimension(150, 50));
-            sortingGrid.setConstraints(btn, gbc);
-            tableSortingPanel.add(btn, gbc);
+            JLabel lbl = new JLabel("");
+            lbl.setPreferredSize(new Dimension(150, 50));
+            sortingGrid.setConstraints(lbl, gbc);
+            tableSortingPanel.add(lbl, gbc);
         }
     }
 
-    private JLabel createSortingPanelLabel() {
+    /**
+     * Create label to signify the panel's function, and returns it
+     * @return JLabel that says what the panel does
+     */
+    private JLabel createSortingAndDescriptionPanelLabel() {
         // Create the descriptive label (that the panel is for sorting)
         JLabel tableSortingLabel = new JLabel("Sort by:");
         tableSortingLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -169,23 +197,31 @@ public class TableWindow {
         return tableSortingLabel;
     }
 
-    private void createSortingPanelTextArea() {
+    /**
+     * Create the text area for the sorting/description panel, with default text to guide the user
+     */
+    private void createSortingAndDescriptionPanelTextArea() {
         // Create empty JTextArea that will display info on currently clicked row (if any)
-        rowDescriptionLabel = new JTextArea("Select a row to view its description");
-        rowDescriptionLabel.setMargin( new Insets(10,10,10,10) );
-        rowDescriptionLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
-        rowDescriptionLabel.setWrapStyleWord(true);
-        rowDescriptionLabel.setLineWrap(true);
-        rowDescriptionLabel.setEditable(false);
-        rowDescriptionLabel.setFocusable(false);
+        rowDescriptionBox = new JTextArea("Select a row to view its description");
+        rowDescriptionBox.setMargin( new Insets(10,10,10,10) );
+        rowDescriptionBox.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+        rowDescriptionBox.setWrapStyleWord(true);
+        rowDescriptionBox.setLineWrap(true);
+        rowDescriptionBox.setEditable(false);
+        rowDescriptionBox.setFocusable(false);
     }
 
+    /**
+     * Create sorting buttons with relevant functionality
+     * @param statNameList List of stat names that correspond 1:1 (in order) with the stat file
+     * @return ArrayList of the functional buttons
+     */
     private ArrayList<JButton> createSortingPanelButtons(String[] statNameList) {
         // Create the sorting element that will reorder the rows of the table
         TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(statTable.getModel());
         statTable.setRowSorter(sorter);
 
-        // Create the sorting buttons that will utilise the sorter
+        // Create the sorting buttons that will utilise the sorting
         ArrayList<JButton> sortingButtons = new ArrayList<>();
         for (int i = 0; i < statNameList.length; i++) {
             JButton btn = new JButton(statNameList[i]);
@@ -200,6 +236,7 @@ public class TableWindow {
                     boolean foundMatchingColumn = false;
                     // Check for the column that matches each button's name so each button sorts a different column
                     while (!foundMatchingColumn && i < statNameList.length) {
+                        // If stat name and button name match, add the stat name index as a sort key and the direction (asc/des)
                         if (statNameList[i].equals(btn.getName())) {
                             foundMatchingColumn = true;
                             // If same button was the previous one clicked, then switch between ascending and descending sorting
@@ -221,7 +258,7 @@ public class TableWindow {
                                     otherBtn.setText(otherBtn.getName());
                                 }
                             }
-                            // By default, sort by first column (Name) as that is always unique
+                            // By default, sort ascending by first column (Name) as that is always unique
                             sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
                             sorter.setSortKeys(sortKeys);
                         }
@@ -236,7 +273,12 @@ public class TableWindow {
         return sortingButtons;
     }
 
-    private void addLabelToSortingPanel(GridBagConstraints gbc, JLabel tableSortingLabel) {
+    /**
+     * Adds the label to the grid of the sorting/description panel
+     * @param gbc Constraints that will decide the location and size of the element within the grid
+     * @param tableSortingLabel
+     */
+    private void addLabelToSortingAndDescriptionPanel(GridBagConstraints gbc, JLabel tableSortingLabel) {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -245,7 +287,12 @@ public class TableWindow {
         tableSortingPanel.add(tableSortingLabel);
     }
 
-    private void addButtonsToSortingPanel(GridBagConstraints gbc, ArrayList<JButton> sortingButtons) {
+    /**
+     * Adds the sorting buttons to the grid of the sorting/description panel
+     * @param gbc Constraints that will decide the location and size of the element within the grid
+     * @param sortingButtons
+     */
+    private void addButtonsToSortingAndDescriptionPanel(GridBagConstraints gbc, ArrayList<JButton> sortingButtons) {
         int x = 0;
         int y = 1;
         gbc.gridwidth = 1;
@@ -264,7 +311,12 @@ public class TableWindow {
         }
     }
 
-    private void addTextAreaToSortingPanel(GridBagConstraints gbc, JScrollPane descriptionBox) {
+    /**
+     * Adds the text area to the grid of the sorting/description panel
+     * @param gbc Constraints that will decide the location and size of the element within the grid
+     * @param descriptionBox
+     */
+    private void addTextAreaToSortingAndDescriptionPanel(GridBagConstraints gbc, JScrollPane descriptionBox) {
         gbc.gridx = 0;
         gbc.gridy = 6;
         gbc.gridwidth = 2;
@@ -272,30 +324,34 @@ public class TableWindow {
         sortingGrid.setConstraints(descriptionBox, gbc);
         tableSortingPanel.add(descriptionBox);
     }
+    
     /**
-     * 
-     * @param fileName
-     * @param statNameList
-     * @return
-     * @throws NullPointerException
-     * @throws FileNotFoundException
-     * @throws IllegalStateException
+     * Parses the given file into a String[][] where outer array is number of entries in file, and inner array is 
+     * number of stat names (i.e., outer will be row, inner will be column)
+     * @param statFileName File name of the stats file
+     * @param statNameList List of stat names that correspond 1:1 (in order) with the stat file
+     * @return String[][] that contains parsed file data 
+     * @throws NullPointerException Thrown when the file name parameter cannot be found
+     * @throws FileNotFoundException Thrown when the file name given to the scanner is not found
+     * @throws IllegalStateException Thrown if scanner is closed or tries reading a nonexistent line
      */
-    private String[][] getFileContentsAsNestedArray(String fileName, String[] statNameList) throws NullPointerException, FileNotFoundException, IllegalStateException {
-        return parser.parseStatFileIntoArray(fileName, statNameList);
+    private String[][] getFileContentsAsNestedArray(String statFileName, String[] statNameList) throws NullPointerException, FileNotFoundException, IllegalStateException {
+        return parser.parseStatFileIntoArray(statFileName, statNameList);
     }
 
     /**
-     * 
-     * @param fileName
+     * Parses the given file into HashMap where key corresponds to unique name that can be associated with data 
+     * from the other corresponding file, and value is the description
+     * @param descriptionFileName File name of the description file
      */
-    private void convertDescriptionFileToMap(String fileName) {
-        descriptionMap = parser.parseDescriptionFileIntoMap(fileName);
+    private void convertDescriptionFileToMap(String descriptionFileName) {
+        descriptionMap = parser.parseDescriptionFileIntoMap(descriptionFileName);
     } 
 
     /**
-     * 
-     * @param table
+     * Adjusts the table column widths to allow for each column to fit its data on the screen
+     * Taken from internet (https://stackoverflow.com/questions/17627431/auto-resizing-the-jtable-column-widths)
+     * @param table Table that needs its column widths to be adjusted.
      */
     private void resizeColumnWidth(JTable table) {
         final TableColumnModel columnModel = table.getColumnModel();

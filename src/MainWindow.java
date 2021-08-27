@@ -10,27 +10,27 @@ import java.io.FileNotFoundException;
 public class MainWindow {
 
     TableWindow tableWindow;
+    // Label, stat file name, description file name, and stat name list for the list of heroes
     private String heroViewLabel = "List of Heroes";
     private String heroFileName = "files/feh-heroes.txt";
     private String heroDescriptionFileName = "files/feh-herodescriptions.txt";
     private String[] heroStatList = {"Name", "Colour", "Weapon", "Movement", "HP", "Atk", "Spd", "Def", "Res", "Game"};
-
+    // Label, stat file name, description file name, and stat name list for the list of weapons
     private String weaponViewLabel = "List of Weapons";
     private String weaponFileName = "files/feh-weapons.txt";
     private String weaponDescriptionFileName = "files/feh-weapondescriptions.txt";
     private String[] weaponStatList = {"Name", "Colour", "Type", "Might", "PRF", "Refinable", "Cost"};
-
+    // Arrays that contain the above in the same order 
     private String[] arrayOfLabels = {heroViewLabel, weaponViewLabel};
     private String[] arrayOfFileNames = {heroFileName, weaponFileName};
     private String[] arrayOfDescriptionFileNames = {heroDescriptionFileName, weaponDescriptionFileName};
     private String[][] arrayOfStatLists = {heroStatList, weaponStatList};
 
-    //private JFrame mainFrame;
-    private JLabel tableNameLabel;
-    private JScrollPane tableViewPanel;
-    private JPanel tableSortingPanel;
-    private int currentTableNumber;
-    private JLabel tableNumberLabel;
+    private JLabel header;                      // Label at the top that says what the table is displaying
+    private JScrollPane tableViewPanel;         // Table that will contain data based on the files used
+    private JPanel sortingAndDescriptionPanel;  // Panel that contains sorting buttons and text area to display description of selected row
+    private int currentTableNumber;             // Current table number that is being displayed
+    private JLabel tableNumberLabel;            // Label with the text of the current table number
 
     public static void main(String[] args) throws NullPointerException, FileNotFoundException, IllegalStateException  {
         MainWindow main = new MainWindow();
@@ -38,17 +38,16 @@ public class MainWindow {
     }
 
     public void createMainWindow() throws NullPointerException, FileNotFoundException, IllegalStateException  {
-        tableWindow = new TableWindow();
-
         // Initialising frame
         JFrame mainFrame = new JFrame();
         // Initialising base window header
         JPanel tableNamePanel = new JPanel();
         tableNamePanel.setPreferredSize(new Dimension(1500, 40));
         // Initialising main part of window, the table panel
+        tableWindow = new TableWindow();
         tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[0], arrayOfDescriptionFileNames[0], arrayOfStatLists[0]);
         // Initialising sorting panel for the table
-        tableSortingPanel = tableWindow.getSorterAndDescriptionPanel(arrayOfStatLists[0]);
+        sortingAndDescriptionPanel = tableWindow.getSortingAndDescriptionPanel(arrayOfStatLists[0]);
         // Creating bottom part of window, to switch between table and sorting methods
         GridBagLayout tableSelectionPanelLayout = new GridBagLayout();
         JPanel tableSelectionPanel = new JPanel(tableSelectionPanelLayout);
@@ -56,14 +55,14 @@ public class MainWindow {
         // Adding the above aspects to their respective areas
         mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
         mainFrame.getContentPane().add(BorderLayout.SOUTH, tableSelectionPanel);
-        mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);
+        mainFrame.getContentPane().add(BorderLayout.EAST, sortingAndDescriptionPanel);
         mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);
 
         // Components for tableNamePanel
-        tableNameLabel = new JLabel(arrayOfLabels[0]);
-        tableNameLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
-        tableNameLabel.setVerticalAlignment(SwingConstants.CENTER);
-        tableNamePanel.add(tableNameLabel);
+        header = new JLabel(arrayOfLabels[0]);
+        header.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
+        header.setVerticalAlignment(SwingConstants.CENTER);
+        tableNamePanel.add(header);
 
         // Components for tableSelectionPanel
         JButton previousTableButton = new JButton("<");
@@ -71,7 +70,7 @@ public class MainWindow {
         previousTableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.getContentPane().remove(tableNamePanel);
-                mainFrame.getContentPane().remove(tableSortingPanel);
+                mainFrame.getContentPane().remove(sortingAndDescriptionPanel);
                 mainFrame.getContentPane().remove(tableViewPanel);
                 int newTableNumber = currentTableNumber;
                 if (newTableNumber == 0) {
@@ -83,12 +82,12 @@ public class MainWindow {
                 }
                 currentTableNumber = newTableNumber;
                 tableNumberLabel.setText(newTableNumber + 1 + "");
-                tableNameLabel.setText(arrayOfLabels[newTableNumber]);
+                header.setText(arrayOfLabels[newTableNumber]);
                 try {
                     tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
-                    tableSortingPanel = tableWindow.getSorterAndDescriptionPanel(arrayOfStatLists[newTableNumber]);
+                    sortingAndDescriptionPanel = tableWindow.getSortingAndDescriptionPanel(arrayOfStatLists[newTableNumber]);
                     mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
-                    mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);
+                    mainFrame.getContentPane().add(BorderLayout.EAST, sortingAndDescriptionPanel);
                     mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);
                 } catch (Exception e1) {
                     e1.printStackTrace();
@@ -100,7 +99,7 @@ public class MainWindow {
         nextTableButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.getContentPane().remove(tableNamePanel);
-                mainFrame.getContentPane().remove(tableSortingPanel);
+                mainFrame.getContentPane().remove(sortingAndDescriptionPanel);
                 mainFrame.getContentPane().remove(tableViewPanel);
                 int newTableNumber = currentTableNumber;
                 if (newTableNumber == arrayOfStatLists.length - 1) {
@@ -112,12 +111,12 @@ public class MainWindow {
                 }
                 currentTableNumber = newTableNumber;
                 tableNumberLabel.setText(newTableNumber + 1 + "");
-                tableNameLabel.setText(arrayOfLabels[newTableNumber]);
+                header.setText(arrayOfLabels[newTableNumber]);
                 try {
                     tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
-                    tableSortingPanel = tableWindow.getSorterAndDescriptionPanel(arrayOfStatLists[newTableNumber]);
+                    sortingAndDescriptionPanel = tableWindow.getSortingAndDescriptionPanel(arrayOfStatLists[newTableNumber]);
                     mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
-                    mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);
+                    mainFrame.getContentPane().add(BorderLayout.EAST, sortingAndDescriptionPanel);
                     mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);
                 } catch (Exception e1) {
                     e1.printStackTrace();
