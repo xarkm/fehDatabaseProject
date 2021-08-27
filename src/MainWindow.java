@@ -20,11 +20,16 @@ public class MainWindow {
     private String weaponFileName = "files/feh-weapons.txt";
     private String weaponDescriptionFileName = "files/feh-weapondescriptions.txt";
     private String[] weaponStatList = {"Name", "Colour", "Type", "Might", "PRF", "Refinable", "Cost"};
+    // Label, stat file name, description file name, and stat name list for the list of refines
+    private String refineViewLabel = "List of Refines";
+    private String refineFileName = "files/feh-refines.txt";
+    private String refineDescriptionFileName = "files/feh-refinedescriptions.txt";
+    private String[] refineStatList = {"Name", "Mt", "HP", "Spd", "Def", "Res", "Arena Medals", "Refining Stones", "Divine Dew", "SP"};
     // Arrays that contain the above in the same order 
-    private String[] arrayOfLabels = {heroViewLabel, weaponViewLabel};
-    private String[] arrayOfFileNames = {heroFileName, weaponFileName};
-    private String[] arrayOfDescriptionFileNames = {heroDescriptionFileName, weaponDescriptionFileName};
-    private String[][] arrayOfStatLists = {heroStatList, weaponStatList};
+    private String[] arrayOfLabels = {heroViewLabel, weaponViewLabel, refineViewLabel};
+    private String[] arrayOfFileNames = {heroFileName, weaponFileName, refineFileName};
+    private String[] arrayOfDescriptionFileNames = {heroDescriptionFileName, weaponDescriptionFileName, refineDescriptionFileName};
+    private String[][] arrayOfStatLists = {heroStatList, weaponStatList, refineStatList};
 
     private JLabel header;                      // Label at the top that says what the table is displaying
     private JScrollPane tableViewPanel;         // Table that will contain data based on the files used
@@ -42,7 +47,6 @@ public class MainWindow {
         JFrame mainFrame = new JFrame();
         // Initialising base window header
         JPanel tableNamePanel = new JPanel();
-        tableNamePanel.setPreferredSize(new Dimension(1500, 40));
         // Initialising main part of window, the table panel
         tableWindow = new TableWindow();
         tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[0], arrayOfDescriptionFileNames[0], arrayOfStatLists[0]);
@@ -81,7 +85,7 @@ public class MainWindow {
                     newTableNumber -= 1;
                 }
                 currentTableNumber = newTableNumber;
-                tableNumberLabel.setText(newTableNumber + 1 + "");
+                tableNumberLabel.setText(newTableNumber + 1 + "/" + arrayOfLabels.length);
                 header.setText(arrayOfLabels[newTableNumber]);
                 try {
                     tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
@@ -110,7 +114,7 @@ public class MainWindow {
                     newTableNumber += 1;
                 }
                 currentTableNumber = newTableNumber;
-                tableNumberLabel.setText(newTableNumber + 1 + "");
+                tableNumberLabel.setText(newTableNumber + 1 + "/" + arrayOfLabels.length);
                 header.setText(arrayOfLabels[newTableNumber]);
                 try {
                     tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
@@ -123,7 +127,7 @@ public class MainWindow {
                 }
             }
         });
-        tableNumberLabel = new JLabel("1");
+        tableNumberLabel = new JLabel("1/" + arrayOfLabels.length);
         tableNumberLabel.setFont(new Font("Lucida Grande", Font.PLAIN, 16));
         tableNumberLabel.setHorizontalAlignment(SwingConstants.CENTER);
         currentTableNumber = 0;

@@ -160,7 +160,7 @@ public class TableWindow {
         createSortingAndDescriptionPanelTextArea();
         // Add the text box to a scroll pane for longer descriptions
         JScrollPane descriptionBox = new JScrollPane(rowDescriptionBox);
-        descriptionBox.setPreferredSize(new Dimension(290, 440));
+        descriptionBox.setPreferredSize(new Dimension(290, 390));
         // Add text area to grid
         addTextAreaToSortingAndDescriptionPanel(gbc, descriptionBox);
     }
@@ -318,7 +318,7 @@ public class TableWindow {
      */
     private void addTextAreaToSortingAndDescriptionPanel(GridBagConstraints gbc, JScrollPane descriptionBox) {
         gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridwidth = 2;
         gbc.gridheight = GridBagConstraints.REMAINDER;
         sortingGrid.setConstraints(descriptionBox, gbc);
