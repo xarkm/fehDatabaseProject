@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class Parser {
 
     /**
-     * Takes file and creates an array list for each line in it.
+     * Takes file and creates an array list for each line in it. Splits each line using ','.
      * @param fileName Name of the file to be parsed
      * @param statNames ArrayList of all stat names
      * @return String[][], with each entry corresponding to one line in the file
@@ -18,7 +18,7 @@ public class Parser {
      * @throws FileNotFoundException Thrown when the file name given to the scanner is not found
      * @throws IllegalStateException Thrown if scanner is closed
      */
-    public String[][] parseStatFileIntoArray(String fileName, String[] statNames) throws NullPointerException, FileNotFoundException, IllegalStateException {
+    public String[][] parseStatFileIntoArray(String fileName, String[] statNames) {
         File file = null;
         // Try to update file with the file to be parsed
         try {
@@ -69,6 +69,12 @@ public class Parser {
         return count;
     }
 
+    /**
+     * Takes file and creates a hash map for each line in the file. Splits each line on the first ',', using the
+     * first part as the key and the second part as the value.
+     * @param fileName Name of the file to be converted into a hash map
+     * @return hash map with name as the key and description as the value
+     */
     public HashMap<String, String> parseDescriptionFileIntoMap(String fileName) {
         File file = null;
         // Try to update file with the file to be parsed

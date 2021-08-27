@@ -1,9 +1,11 @@
 package src;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.NullPointerException;
+import java.lang.IllegalStateException;
+import java.io.FileNotFoundException;
 
 public class MainWindow {
 
@@ -30,12 +32,12 @@ public class MainWindow {
     private int currentTableNumber;
     private JLabel tableNumberLabel;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws NullPointerException, FileNotFoundException, IllegalStateException  {
         MainWindow main = new MainWindow();
         main.createMainWindow();
     }
 
-    public void createMainWindow() throws Exception {
+    public void createMainWindow() throws NullPointerException, FileNotFoundException, IllegalStateException  {
         tableWindow = new TableWindow();
 
         // Initialising frame
@@ -44,9 +46,9 @@ public class MainWindow {
         JPanel tableNamePanel = new JPanel();
         tableNamePanel.setPreferredSize(new Dimension(1500, 40));
         // Initialising main part of window, the table panel
-        tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[0], arrayOfDescriptionFileNames[0], arrayOfStatLists[0]);
+        tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[0], arrayOfDescriptionFileNames[0], arrayOfStatLists[0]);
         // Initialising sorting panel for the table
-        tableSortingPanel = tableWindow.createPanelForSorting(arrayOfStatLists[0]);
+        tableSortingPanel = tableWindow.getSorterAndDescriptionPanel(arrayOfStatLists[0]);
         // Creating bottom part of window, to switch between table and sorting methods
         GridBagLayout tableSelectionPanelLayout = new GridBagLayout();
         JPanel tableSelectionPanel = new JPanel(tableSelectionPanelLayout);
@@ -83,8 +85,8 @@ public class MainWindow {
                 tableNumberLabel.setText(newTableNumber + 1 + "");
                 tableNameLabel.setText(arrayOfLabels[newTableNumber]);
                 try {
-                    tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
-                    tableSortingPanel = tableWindow.createPanelForSorting(arrayOfStatLists[newTableNumber]);
+                    tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
+                    tableSortingPanel = tableWindow.getSorterAndDescriptionPanel(arrayOfStatLists[newTableNumber]);
                     mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
                     mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);
                     mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);
@@ -112,8 +114,8 @@ public class MainWindow {
                 tableNumberLabel.setText(newTableNumber + 1 + "");
                 tableNameLabel.setText(arrayOfLabels[newTableNumber]);
                 try {
-                    tableViewPanel = tableWindow.createPanelForTable(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
-                    tableSortingPanel = tableWindow.createPanelForSorting(arrayOfStatLists[newTableNumber]);
+                    tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
+                    tableSortingPanel = tableWindow.getSorterAndDescriptionPanel(arrayOfStatLists[newTableNumber]);
                     mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
                     mainFrame.getContentPane().add(BorderLayout.EAST, tableSortingPanel);
                     mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);
