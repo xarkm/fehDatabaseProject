@@ -19,12 +19,12 @@ public class MainWindow {
     private String weaponViewLabel = "List of Weapons";
     private String weaponFileName = "files/feh-weapons.txt";
     private String weaponDescriptionFileName = "files/feh-weapondescriptions.txt";
-    private String[] weaponStatList = {"Name", "Colour", "Type", "Might", "PRF", "Refinable", "Cost"};
+    private String[] weaponStatList = {"Name", "Colour", "Type", "Mt", "Inheritable", "Refinable", "SP"};
     // Label, stat file name, description file name, and stat name list for the list of refines
     private String refineViewLabel = "List of Refines";
     private String refineFileName = "files/feh-refines.txt";
     private String refineDescriptionFileName = "files/feh-refinedescriptions.txt";
-    private String[] refineStatList = {"Name", "Mt", "HP", "Spd", "Def", "Res", "Arena Medals", "Refining Stones", "Divine Dew", "SP"};
+    private String[] refineStatList = {"Name", "Mt", "HP", "Spd", "Def", "Res", "Arena Medal", "Ref. Stone", "Divine Dew", "SP"};
     // Arrays that contain the above in the same order 
     private String[] arrayOfLabels = {heroViewLabel, weaponViewLabel, refineViewLabel};
     private String[] arrayOfFileNames = {heroFileName, weaponFileName, refineFileName};
@@ -51,7 +51,7 @@ public class MainWindow {
         tableWindow = new TableWindow();
         tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[0], arrayOfDescriptionFileNames[0], arrayOfStatLists[0]);
         // Initialising sorting panel for the table
-        sortingAndDescriptionPanel = tableWindow.getSortingAndDescriptionPanel(arrayOfStatLists[0]);
+        sortingAndDescriptionPanel = tableWindow.getSortDescriptionSearchPanel(arrayOfStatLists[0]);
         // Creating bottom part of window, to switch between table and sorting methods
         GridBagLayout tableSelectionPanelLayout = new GridBagLayout();
         JPanel tableSelectionPanel = new JPanel(tableSelectionPanelLayout);
@@ -89,7 +89,7 @@ public class MainWindow {
                 header.setText(arrayOfLabels[newTableNumber]);
                 try {
                     tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
-                    sortingAndDescriptionPanel = tableWindow.getSortingAndDescriptionPanel(arrayOfStatLists[newTableNumber]);
+                    sortingAndDescriptionPanel = tableWindow.getSortDescriptionSearchPanel(arrayOfStatLists[newTableNumber]);
                     mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
                     mainFrame.getContentPane().add(BorderLayout.EAST, sortingAndDescriptionPanel);
                     mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);
@@ -118,7 +118,7 @@ public class MainWindow {
                 header.setText(arrayOfLabels[newTableNumber]);
                 try {
                     tableViewPanel = tableWindow.getPopulatedTablePanel(arrayOfFileNames[newTableNumber], arrayOfDescriptionFileNames[newTableNumber], arrayOfStatLists[newTableNumber]);
-                    sortingAndDescriptionPanel = tableWindow.getSortingAndDescriptionPanel(arrayOfStatLists[newTableNumber]);
+                    sortingAndDescriptionPanel = tableWindow.getSortDescriptionSearchPanel(arrayOfStatLists[newTableNumber]);
                     mainFrame.getContentPane().add(BorderLayout.NORTH, tableNamePanel);
                     mainFrame.getContentPane().add(BorderLayout.EAST, sortingAndDescriptionPanel);
                     mainFrame.getContentPane().add(BorderLayout.CENTER, tableViewPanel);

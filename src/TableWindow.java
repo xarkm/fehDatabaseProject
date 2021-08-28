@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.lang.NullPointerException;
 import java.lang.IllegalStateException;
 import java.io.FileNotFoundException;
+import javax.swing.border.*;
 
 public class TableWindow {
 
@@ -19,7 +20,9 @@ public class TableWindow {
     private HashMap<String, String> descriptionMap; // Holds HashMap associating unique names to descriptions
     private JTextArea rowDescriptionBox;            // Text area to display description of selected row
     private JPanel tableSortingPanel;               // Will contain both sorting and description box elements
+    private JTextField searchField;                 // Allow the user to enter in a string to search for names
     private GridBagLayout sortingGrid;              // Grid that will contain sorting and description box elements
+    private TableRowSorter<TableModel> sorter;
 
     /**
      * Constructor that simply creates a parser for the files that will be used to create the table
@@ -111,17 +114,18 @@ public class TableWindow {
      * @param statNameList List of stat names that correspond 1:1 (in order) with the stat file
      * @return JPanel that contains sorting buttons and text area to display descriptions
      */
-    public JPanel getSortingAndDescriptionPanel(String[] statNameList) {
-        initialiseSortingAndDescriptionPanel();
-        createTableSorter(statNameList);
-        createDescriptionBox();
+    public JPanel getSortDescriptionSearchPanel(String[] statNameList) {
+        initialiseSortDescriptionSearchPanel();
+        integrateTableSorter(statNameList);
+        integrateDescriptionBox();
+        integrateSearchField();
         return tableSortingPanel;
     }
 
     /**
      * Initialises the grid and panel, adding the grid to the panel
      */
-    private void initialiseSortingAndDescriptionPanel() {
+    private void initialiseSortDescriptionSearchPanel() {
         sortingGrid = new GridBagLayout();
         tableSortingPanel = new JPanel(sortingGrid);
     }
@@ -130,7 +134,7 @@ public class TableWindow {
      * Create and add the sorting portion of the sorting/description panel
      * @param statNameList List of stat names that correspond 1:1 (in order) with the stat file
      */
-    private void createTableSorter(String[] statNameList) {
+    private void integrateTableSorter(String[] statNameList) {
         // Create base GridBagConstraints object that will be modified as needed for each aspect of the grid
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 1;
@@ -138,31 +142,45 @@ public class TableWindow {
         // Create dummy cells so there is correct sizing for each aspect of the grid
         createDummyCells(gbc);
         // Create the panel's label/header
-        JLabel tableSortingLabel = createSortingAndDescriptionPanelLabel();
+        JLabel tableSortingLabel = createSortDescriptionSearchPanelLabel();
         // Create the buttons for sorting and group them up in an array
         ArrayList<JButton> sortingButtons = createSortingPanelButtons(statNameList);;
         gbc.fill = GridBagConstraints.NONE;
         // Add label to grid
-        addLabelToSortingAndDescriptionPanel(gbc, tableSortingLabel);
+        addLabelToSortDescriptionSearchPanel(gbc, tableSortingLabel);
         // Add buttons to grid
-        addButtonsToSortingAndDescriptionPanel(gbc, sortingButtons);
+        addButtonsToSortDescriptionSearchPanel(gbc, sortingButtons);
     }
 
     /**
      * Create and add text area for sorting/description panel
      */
-    private void createDescriptionBox() {
+    private void integrateDescriptionBox() {
         // Create GridBagConstraints to correctly place the text area in the grid
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 1;
         gbc.weighty = 1;
         // Create the panel's text area where descriptions will be displayed when the relevant row is clicked
-        createSortingAndDescriptionPanelTextArea();
+        createSortDescriptionSearchPanelTextArea();
         // Add the text box to a scroll pane for longer descriptions
         JScrollPane descriptionBox = new JScrollPane(rowDescriptionBox);
-        descriptionBox.setPreferredSize(new Dimension(290, 390));
+        descriptionBox.setPreferredSize(new Dimension(290, 340));
         // Add text area to grid
-        addTextAreaToSortingAndDescriptionPanel(gbc, descriptionBox);
+        addTextAreaToSortDescriptionSearchPanel(gbc, descriptionBox);
+    }
+
+    /**
+     * Create and add the search box for the sorting/description panel
+     */
+    private void integrateSearchField() {
+        // Create GridBagConstraints to correctly place the search field in the grid
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        // Create the panel's search field box 
+        createSortDescriptionSearchPanelSearchField();
+        // Add search field to grid
+        addSearchFieldToSortDescriptionSearchPanel(gbc, searchField);
     }
 
     /**
@@ -189,7 +207,7 @@ public class TableWindow {
      * Create label to signify the panel's function, and returns it
      * @return JLabel that says what the panel does
      */
-    private JLabel createSortingAndDescriptionPanelLabel() {
+    private JLabel createSortDescriptionSearchPanelLabel() {
         // Create the descriptive label (that the panel is for sorting)
         JLabel tableSortingLabel = new JLabel("Sort by:");
         tableSortingLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -200,10 +218,10 @@ public class TableWindow {
     /**
      * Create the text area for the sorting/description panel, with default text to guide the user
      */
-    private void createSortingAndDescriptionPanelTextArea() {
+    private void createSortDescriptionSearchPanelTextArea() {
         // Create empty JTextArea that will display info on currently clicked row (if any)
         rowDescriptionBox = new JTextArea("Select a row to view its description");
-        rowDescriptionBox.setMargin( new Insets(10,10,10,10) );
+        rowDescriptionBox.setMargin(new Insets(10,10,10,10));
         rowDescriptionBox.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
         rowDescriptionBox.setWrapStyleWord(true);
         rowDescriptionBox.setLineWrap(true);
@@ -218,7 +236,7 @@ public class TableWindow {
      */
     private ArrayList<JButton> createSortingPanelButtons(String[] statNameList) {
         // Create the sorting element that will reorder the rows of the table
-        TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(statTable.getModel());
+        sorter = new TableRowSorter<TableModel>(statTable.getModel());
         statTable.setRowSorter(sorter);
 
         // Create the sorting buttons that will utilise the sorting
@@ -274,11 +292,58 @@ public class TableWindow {
     }
 
     /**
+     * Create the search box for the sorting/description panel, with placeholder text to guide the user
+     */
+    private void createSortDescriptionSearchPanelSearchField() {
+        searchField = new JTextField() {
+            @Override
+            protected void paintComponent(java.awt.Graphics g) {
+                super.paintComponent(g);
+                if (getText().isEmpty() && ! (FocusManager.getCurrentKeyboardFocusManager().getFocusOwner() == this)) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setPaint(Color.GRAY);
+                    g2.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+                    g2.drawString("Search", 10, 25); 
+                }
+            }
+        };
+        searchField.setFont(new Font("Lucida Grande", Font.PLAIN, 14));
+        searchField.setPreferredSize(new Dimension(290, 40));
+        searchField.setBorder(new CompoundBorder(new LineBorder(new Color(153, 153, 153), 1), new EmptyBorder(10,10,10,10)));
+        searchField.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void insertUpdate(DocumentEvent d) {
+                RowFilter<TableModel, Integer> rf = null;
+                //If current expression doesn't parse, don't update.
+                try {
+                    rf = RowFilter.regexFilter("(?i)" + searchField.getText(), 0);
+                } catch (java.util.regex.PatternSyntaxException e) {
+                    return;
+                }
+                sorter.setRowFilter(rf);
+            }
+            @Override
+            public void changedUpdate(DocumentEvent d) {}
+            @Override
+            public void removeUpdate(DocumentEvent d) {
+                RowFilter<TableModel, Integer> rf = null;
+                //If current expression doesn't parse, don't update.
+                try {
+                    rf = RowFilter.regexFilter("(?i)" + searchField.getText(), 0);
+                } catch (java.util.regex.PatternSyntaxException e) {
+                    return;
+                }
+                sorter.setRowFilter(rf);
+            }
+        });
+    }
+    
+    /**
      * Adds the label to the grid of the sorting/description panel
      * @param gbc Constraints that will decide the location and size of the element within the grid
-     * @param tableSortingLabel
+     * @param tableSortingLabel JLabel that describes the functionality of the buttons
      */
-    private void addLabelToSortingAndDescriptionPanel(GridBagConstraints gbc, JLabel tableSortingLabel) {
+    private void addLabelToSortDescriptionSearchPanel(GridBagConstraints gbc, JLabel tableSortingLabel) {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -292,7 +357,7 @@ public class TableWindow {
      * @param gbc Constraints that will decide the location and size of the element within the grid
      * @param sortingButtons
      */
-    private void addButtonsToSortingAndDescriptionPanel(GridBagConstraints gbc, ArrayList<JButton> sortingButtons) {
+    private void addButtonsToSortDescriptionSearchPanel(GridBagConstraints gbc, ArrayList<JButton> sortingButtons) {
         int x = 0;
         int y = 1;
         gbc.gridwidth = 1;
@@ -314,15 +379,29 @@ public class TableWindow {
     /**
      * Adds the text area to the grid of the sorting/description panel
      * @param gbc Constraints that will decide the location and size of the element within the grid
-     * @param descriptionBox
+     * @param descriptionBox JTextArea that will contain the description of the row clicked on by the user
      */
-    private void addTextAreaToSortingAndDescriptionPanel(GridBagConstraints gbc, JScrollPane descriptionBox) {
+    private void addTextAreaToSortDescriptionSearchPanel(GridBagConstraints gbc, JScrollPane descriptionBox) {
         gbc.gridx = 0;
         gbc.gridy = 7;
         gbc.gridwidth = 2;
-        gbc.gridheight = GridBagConstraints.REMAINDER;
+        gbc.gridheight = 7;
         sortingGrid.setConstraints(descriptionBox, gbc);
         tableSortingPanel.add(descriptionBox);
+    }
+
+    /**
+     * Adds the search box to the grid of the sorting/description panel
+     * @param gbc Constraints that will decide the location and size of the element within the grid
+     * @param searchField JTextField that the user can type into to search through the table
+     */
+    private void addSearchFieldToSortDescriptionSearchPanel(GridBagConstraints gbc, JTextField searchField) {
+        gbc.gridx = 0;
+        gbc.gridy = 14;
+        gbc.gridwidth = 2;
+        gbc.gridheight = GridBagConstraints.REMAINDER;
+        sortingGrid.setConstraints(searchField, gbc);
+        tableSortingPanel.add(searchField);
     }
     
     /**
