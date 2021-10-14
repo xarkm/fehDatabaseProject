@@ -10,8 +10,8 @@ Main functionalities:
 - Filter the table via a search field
 
 Possible changes:
-- Add more tables
-    - See if web scraper can be used to take info from community sites rather than manually filling out text files
+- Add more tables (Support/A/B/C Skills, Specials)
+- See if web scraper can be used to take info from community sites rather than manually filling out text files
 	
 Sorting entries in de/ascending order:
 ![FEHSorting](https://user-images.githubusercontent.com/47302107/137364377-6fe91696-fb1c-40a1-b105-a06f44135e94.gif)
